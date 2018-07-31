@@ -6,6 +6,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import WebpackBar from 'webpackbar';
+import nodeExternals from 'webpack-node-externals';
 import paths from '../config/paths';
 
 export default ({ mode, isServer, isDev, publicPath, port }) => {
@@ -35,6 +36,10 @@ export default ({ mode, isServer, isDev, publicPath, port }) => {
     node: {
       __dirname: isServer
     },
+
+    externals: [
+      isServer && nodeExternals()
+    ].filter(Boolean),
 
     module: {
       rules: [
