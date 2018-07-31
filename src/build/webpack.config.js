@@ -8,76 +8,103 @@ import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import WebpackBar from 'webpackbar';
 import paths from '../config/paths';
 
-export default ({ mode, isServer, isDev, publicPath, port }) => ({
-  mode,
+export default ({ mode, isServer, isDev, publicPath, port }) => {
+  const result = {
+    mode,
 
-  target: isServer ? 'node' : 'web',
+    target: isServer ? 'node' : 'web',
 
-  entry: [
-    !isServer && isDev && `webpack-hot-middleware/client?path=http://localhost:${port}/__webpack_hmr`,
-    !isDev && 'babel-polyfill',
-    isServer ? `${paths.server.src}/render.js` : `${paths.client.src}/index.js`
-  ].filter(Boolean),
+    bail: true,
 
-  output: {
-    filename: isServer ? 'app.js' : 'js/main.[hash:8].js',
-    path: isServer ? paths.server.dist : paths.client.dist,
-    publicPath: `/${publicPath}/`,
-    libraryTarget: isServer ? 'commonjs2' : 'var'
-  },
+    entry: {
+      main: [
+        !isServer && isDev && `webpack-hot-middleware/client?path=http://localhost:${port}/__webpack_hmr`,
+        !isDev && 'babel-polyfill',
+        isServer ? `${paths.server.src}/render.js` : `${paths.client.src}/index.js`
+      ].filter(Boolean)
+    },
 
-  node: {
-    __dirname: isServer
-  },
+    output: {
+      filename: isServer ? 'app.js' : 'js/[name].[hash].js',
+      chunkFilename: 'js/[name].[chunkhash].js',
+      path: isServer ? paths.server.dist : paths.client.dist,
+      publicPath: `/${publicPath}/`,
+      libraryTarget: isServer ? 'commonjs2' : 'var'
+    },
 
-  module: {
-    rules: [
-      {
-        test: /\.jsx?$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader'
-      },
-      {
-        test: /\.css$/,
-        use: [
-          (!isServer && isDev) && 'css-hot-loader',
-          !isServer && MiniCssExtractPlugin.loader,
-          'css-loader'
-        ].filter(Boolean)
-      }
-    ]
-  },
+    node: {
+      __dirname: isServer
+    },
 
-  plugins: [
-    new CleanWebpackPlugin('.dist', {
-      root: isServer ? paths.server.src : paths.client.src,
-      verbose: false
-    }),
+    module: {
+      rules: [
+        {
+          test: /\.jsx?$/,
+          exclude: /node_modules/,
+          loader: 'babel-loader'
+        },
+        {
+          test: /\.css$/,
+          use: [
+            (!isServer && isDev) && 'css-hot-loader',
+            !isServer && MiniCssExtractPlugin.loader,
+            'css-loader'
+          ].filter(Boolean)
+        }
+      ]
+    },
 
-    !isServer && new MiniCssExtractPlugin({
-      filename: '[name].css',
-      disable: false,
-      allChunks: true
-    }),
+    plugins: [
+      new CleanWebpackPlugin('.dist', {
+        root: isServer ? paths.server.src : paths.client.src,
+        verbose: false
+      }),
 
-    isDev && new WriteFilePlugin({ force: true, log: true }),
+      new webpack.HashedModuleIdsPlugin(),
 
-    isDev && !isServer && new webpack.HotModuleReplacementPlugin(),
+      !isServer && new MiniCssExtractPlugin({
+        filename: 'css/[name].css',
+        disable: false,
+        allChunks: true
+      }),
 
-    !isServer && new ManifestPlugin(),
+      isDev && new WriteFilePlugin({ force: true, log: true }),
 
-    new WebpackBar({
-      name: isServer ? 'server' : 'client'
-    })
-  ].filter(Boolean),
+      isDev && !isServer && new webpack.HotModuleReplacementPlugin(),
 
-  optimization: {
-    minimizer: [
+      !isServer && new ManifestPlugin(),
+
+      new WebpackBar({
+        name: isServer ? 'server' : 'client'
+      })
+    ].filter(Boolean)
+  };
+
+  result.optimization = {};
+
+  if (!isDev) {
+    result.optimization.minimizer = [
       new UglifyJsPlugin({
         cache: true,
         parallel: true
       }),
       new OptimizeCSSAssetsPlugin({})
-    ]
+    ];
   }
-});
+
+  if (!isServer) {
+    result.optimization.runtimeChunk = true;
+    result.optimization.splitChunks = {
+      cacheGroups: {
+        vendor: {
+          test: /node_modules/,
+          name: 'vendor',
+          chunks: 'all',
+          enforce: true
+        }
+      }
+    };
+  }
+
+  return result;
+};

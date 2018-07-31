@@ -1,6 +1,7 @@
 import path from 'path';
 
 export default {
+  publicPath: 'public/assets',
   client: {
     src: path.resolve(__dirname, '../client/'),
     dist: path.resolve(__dirname, '../client/.dist')

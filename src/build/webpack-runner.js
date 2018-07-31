@@ -3,9 +3,8 @@ import WebpackDevMiddleware from 'webpack-dev-middleware';
 import webpackConfig from './webpack.config';
 
 export default class WebpackRunner {
-  constructor({ mode, isDev, appName, publicPath, port }) {
+  constructor({ mode, isDev, publicPath, port }) {
     this.mode = mode;
-    this.appName = appName;
     this.isDev = isDev;
     this.port = port;
     this.publicPath = publicPath;

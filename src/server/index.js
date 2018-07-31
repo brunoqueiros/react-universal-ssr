@@ -3,7 +3,7 @@ import paths from '../config/paths';
 
 const app = Express();
 
-app.use(`/public/assets/`, Express.static(paths.client.dist));
+app.use(`/${paths.publicPath}/`, Express.static(paths.client.dist));
 
 function clearRequireCache() {
   Object.keys(require.cache).forEach(function(key) {
