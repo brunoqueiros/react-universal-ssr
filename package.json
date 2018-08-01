@@ -19,8 +19,7 @@
     "webpack-hot-middleware": "^2.22.2",
     "webpack-manifest-plugin": "^2.0.3",
     "webpack-node-externals": "^1.7.2",
-    "webpackbar": "^2.6.1",
-    "write-file-webpack-plugin": "^4.3.2"
+    "webpackbar": "^2.6.1"
   },
   "scripts": {
     "start": "NODE_ENV=development babel-node src/server/index.js",

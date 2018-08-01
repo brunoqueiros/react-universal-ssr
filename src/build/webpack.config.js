@@ -1,5 +1,4 @@
 import webpack from 'webpack';
-import WriteFilePlugin from 'write-file-webpack-plugin';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 import ManifestPlugin from 'webpack-manifest-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
@@ -72,8 +71,6 @@ export default ({ mode, isServer, isDev, publicPath, port }) => {
         disable: false,
         allChunks: true
       }),
-
-      isDev && new WriteFilePlugin({ force: true, log: true }),
 
       isDev && !isServer && new webpack.HotModuleReplacementPlugin(),
 

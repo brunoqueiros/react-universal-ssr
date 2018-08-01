@@ -16,6 +16,7 @@ export default class WebpackRunner {
     const middlewareConfig = {
       stats: 'errors-only',
       clientLogLevel: 'warning',
+      writeToDisk: true,
       watchOptions: { ignored: [ /(^|[\/\\])\../, /build/, /node_modules/ ] }
     };
 
