@@ -4,7 +4,6 @@ import paths from '../config/paths';
 export default ({ app }) => {
   const webpackRunnerInstance = new WebpackRunner({
     mode: 'development',
-    appName: 'msp',
     isDev: true,
     publicPath: paths.publicPath,
     port: 3000
